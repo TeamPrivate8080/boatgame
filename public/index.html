@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Shipz - Game</title>
+  <meta name="description"
+    content="Shipz is a multiplayer game where players survive on the high seas, engage in naval combat, explore islands, trade resources, and develop their ships and economy." />
+  <meta name="keywords"
+    content="Shipz, multiplayer game, pirate game, survival, naval combat, trade, islands, ships, economy, online game, sail, explore" />
+  <link rel="canonical" href="https://shipz.nl/" />
+
+  <meta property="og:title" content="Shipz - Multiplayer Pirate Survival Game" />
+  <meta property="og:description"
+    content="Survive on the high seas, trade resources, engage in naval combat, explore islands, and build your fleet in Shipz." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://shipz.nl/game" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Shipz - Multiplayer Pirate Survival Game" />
+  <meta name="twitter:description"
+    content="Survive, trade, fight, and develop your ships in Shipz, a multiplayer game set on the open seas." />
+
+  <meta name="theme-color" content="#0bcaf0" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <script src="socket.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="./game/texts/externaltexts.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/style/game.css">
+  <link rel="stylesheet" href="./game/menu/style/menu.css">
+  <link rel="stylesheet" href="./assets/style/game.pages.css">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    .content-loader {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+    }
+
+    .c-loader-a {
+      width: fit-content;
+      font-weight: bold;
+      font-family: monospace;
+      font-size: 30px;
+      animation: newfrm 3s infinite;
+      z-index: 60;
+      color: rgb(29, 219, 194);
+    }
+
+    .c-loader-a::before {
+      content: "Loading...";
+    }
+
+    @keyframes newfrm {
+
+      0%,
+      10% {
+        transform: perspective(200px) rotateX(0) rotateY(0) scale(1)
+      }
+
+      30%,
+      36% {
+        transform: perspective(200px) rotateX(180deg) rotateY(0) scale(1)
+      }
+
+      63%,
+      69% {
+        transform: perspective(200px) rotateX(180deg) rotateY(180deg) scale(1)
+      }
+
+      90%,
+      100% {
+        transform: perspective(200px) rotateX(180deg) rotateY(180deg) scale(-1)
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-b from-[#001322] to-[#000a12] font-poppins">
+
+  <noscript>
+    <div class="fixed top-0 left-0 w-full bg-red-600 text-white p-4 text-center z-50">
+      JavaScript is disabled. Please enable JavaScript to play Shipz.
+    </div>
+  </noscript>
+
+  <div class="content-loader">
+    <div class="absolute inset-0">
+      <img src="./assets/bg50.png" alt="Background" class="w-full h-full object-cover brightness-80" />
+      <div class="absolute inset-0 bg-black/60"></div>
+    </div>
+    <div class="c-loader-a"></div>
+  </div>
+
+  <div class="content-wrapper hidden">
+
+
+    <div class="gameclient" style="display: none;">
+      <div id="hitroot" class="hitmarker-root" aria-hidden="true"></div>
+
+
+
+      <div id="ship-info"
+        class="fixed top-4 left-4 w-60 bg-zinc-900/80 rounded p-3 shadow-lg z-[9999] flex flex-col gap-2 font-sans">
+
+        <div class="flex items-center gap-3">
+          <div class="w-14 h-14 overflow-hidden flex items-center justify-center">
+            <img id="ship-image" src="./assets/icons/ships/t1.png" alt="Ship" class="w-full h-full object-cover">
+          </div>
+          <div class="flex flex-col justify-center flex-1">
+            <span id="ship-name" class="text-white font-semibold text-sm truncate"></span>
+            <span id="ship-class" class="text-gray-400 text-xs truncate"></span>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center text-[11px] text-gray-300 font-semibold px-1">
+          <div class="flex items-center gap-1">
+            <i data-lucide="heart" class="w-3.5 h-3.5 text-red-500"></i>
+            <span id="ship-health-text"></span>
+          </div>
+          <div class="flex items-center gap-1">
+            <i data-lucide="users" class="w-3.5 h-3.5 text-blue-400"></i>
+            <span id="ship-crew-text"></span>
+          </div>
+          <div class="flex items-center gap-1">
+            <i data-lucide="package" class="w-3.5 h-3.5 text-yellow-400"></i>
+            <span id="ship-cargo-text"></span>
+          </div>
+        </div>
+
+        <div class="flex gap-2 mt-1">
+          <button id="depart-button"
+            class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-semibold py-1 rounded shadow-md flex items-center justify-center gap-1">
+            <i data-lucide="ship-wheel" class="w-3.5 h-3.5"></i> Depart
+          </button>
+
+          <button id="invite-button"
+            class="flex-1 bg-blue-500 hover:bg-blue-400 text-black text-xs font-semibold py-1 rounded shadow-md flex items-center justify-center gap-1">
+            <span class="text-white flex items-center gap-1">
+              <i data-lucide="link" class="w-3.5 h-3.5"></i>
+              Invite
+            </span>
+
+          </button>
+        </div>
+      </div>
+
+      <div id="classic-alert" class="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 hidden">
+        <div
+          class="bg-zinc-900/90 text-white font-semibold px-6 py-3 rounded-sm shadow-md flex items-center space-x-3 animate-slide-down max-w-md w-full">
+          <i data-lucide="alert-circle" class="w-5 h-5 text-yellow-400 flex-shrink-0"></i>
+
+          <span id="classic-alert-text" class="text-sm"></span>
+
+          <button id="classic-alert-close"
+            class="ml-auto text-white hover:text-yellow-400 font-bold text-lg">&times;</button>
+        </div>
+      </div>
+      <div id="chatbox"
+        class="fixed bottom-4 left-0 flex flex-col w-80 h-72 bg-zinc-900/80 border border-zinc-800 rounded-tr-xl shadow-[4px_0_25px_rgba(0,0,0,0.6)] text-white z-[9999] transform -translate-x-[calc(100%-2.2rem)] opacity-90 transition-all duration-500 ease-in-out">
+
+        <div id="chat-header"
+          class="relative px-3 py-2 text-sm font-semibold text-center bg-zinc-950/70 rounded-tr-xl border-b border-white/10 select-none uppercase tracking-wider">
+          Global Chat
+
+          <button id="chat-toggle"
+            class="absolute top-1/2 -right-3 translate-y-[-50%] bg-zinc-800 hover:bg-zinc-700 text-gray-300 w-7 h-7 flex items-center justify-center rounded-r-md shadow-md border border-zinc-700 transition-all">
+            <i data-lucide="chevron-right" id="chat-arrow" class="w-4 h-4 transition-transform duration-300"></i>
+          </button>
+        </div>
+
+        <div id="chat-messages"
+          class="flex-1 px-3 py-2 overflow-y-auto text-sm leading-snug space-y-1 scrollbar-thin scrollbar-thumb-zinc-700/60 scrollbar-track-transparent">
+        </div>
+
+        <input type="text" maxlength="200" id="chat-input" placeholder="Type a message..."
+          class="w-full bg-zinc-800/80 border-t border-white/10 text-sm px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:bg-zinc-800 focus:border-emerald-400/30 transition-all" />
+      </div>
+
+      <div id="leaderboard"
+        class="fixed top-4 right-0 w-80 bg-zinc-900/80 border border-zinc-800 rounded-l-xl text-white z-[9999] transform translate-x-[calc(100%-2.2rem)] opacity-90 transition-all duration-500 ease-in-out">
+
+        <button id="leaderboard-toggle"
+          class="absolute top-4 -left-3 w-8 h-8 bg-zinc-800 hover:bg-zinc-700 text-gray-300 flex items-center justify-center rounded-l-md border border-zinc-700 shadow-md transition-all">
+          <i data-lucide="chevron-left" id="leaderboard-arrow" class="w-4 h-4"></i>
+        </button>
+
+        <div class="flex items-start gap-3 p-4 border-b border-white/10">
+          <div class="w-[100px] h-[100px] overflow-hidden rounded-md border border-zinc-700/40">
+            <canvas id="minimap2d" width="100" height="100"></canvas>
+          </div>
+
+          <div class="flex flex-col flex-1">
+            <div class="flex flex-col gap-0.5">
+              <h2 class="text-lg font-bold tracking-wide">Leaderboard</h2>
+              <span class="text-xs text-gray-400 font-medium active-fleets">Retrieving...</span>
+            </div>
+
+            <div class="mt-2 flex bg-zinc-800/70 rounded-full p-1 border border-zinc-700/40">
+              <button id="tg-fleets" data-type="fleets"
+                class="flex-1 py-1.5 text-xs font-semibold rounded-full bg-zinc-700 text-white transition-colors">
+                Fleets
+              </button>
+              <button id="tg-users" data-type="users"
+                class="flex-1 py-1.5 text-xs font-semibold rounded-full hover:bg-zinc-700/70 text-gray-300 transition-colors">
+                Users
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="flex justify-between text-xs font-semibold px-4 py-2 text-gray-300 uppercase tracking-wide">
+          <span class="w-16 text-left">Group</span>
+          <span class="flex-1 text-center">Name</span>
+          <span class="w-12 text-right">Gold</span>
+        </div>
+        <hr class="border-zinc-700/50 mx-3">
+
+        <ul id="leaderboard-list" class="p-3 space-y-1 text-sm">
+        </ul>
+      </div>
+
+      <div id="island-welcome"></div>
+
+      <div class="bottom-right-ui fixed bottom-3 right-3 flex flex-col items-end gap-3 z-[9999]">
+
+        <div class="resources flex gap-3">
+          <div class="resource flex items-center">
+            <img src="./assets/icons/gi100/glitch-icon-55.png" alt="Wood"
+              class="w-10 h-10 object-contain opacity-80 bg-black/60 border border-white/10 rounded-l-md">
+            <div
+              class="value-box min-w-[2.5rem] px-2 py-1.5 bg-black/60 border border-white/10 border-l-0 rounded-r-md flex justify-center items-center shadow-md">
+              <div class="vw value text-[1.05rem] font-semibold text-amber-200 drop-shadow-[0_0_2px_rgba(0,0,0,0.8)]">
+                0
+              </div>
+            </div>
+          </div>
+
+          <div class="resource flex items-center">
+            <img src="./assets/icons/gi100/glitch-icon-13.png" alt="Gold"
+              class="w-10 h-10 object-contain opacity-80 bg-black/60 border border-white/10 rounded-l-md">
+            <div
+              class="value-box min-w-[2.5rem] px-2 py-1.5 bg-black/60 border border-white/10 border-l-0 rounded-r-md flex justify-center items-center shadow-md">
+              <div class="vg value text-[1.05rem] font-semibold text-amber-300 drop-shadow-[0_0_2px_rgba(0,0,0,0.8)]">
+                0
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hotbar flex gap-2">
+          <div class="slot relative flex flex-col items-center">
+            <div
+              class="box relative w-[60px] h-[60px] bg-zinc-900/60 border border-white/20 rounded-md flex items-center justify-center transition-all duration-200 hover:border-white/40">
+              <div
+                class="number absolute top-1 right-1 text-[11px] font-bold text-white bg-black/60 border border-white/20 rounded-sm px-[4px] leading-tight shadow-sm pointer-events-none">
+                1
+              </div>
+            </div>
+          </div>
+
+          <div class="slot relative flex flex-col items-center">
+            <div
+              class="box relative w-[60px] h-[60px] bg-zinc-900/60 border border-white/20 rounded-md flex items-center justify-center transition-all duration-200 hover:border-white/40">
+              <div
+                class="number absolute top-1 right-1 text-[11px] font-bold text-white bg-black/60 border border-white/20 rounded-sm px-[4px] leading-tight shadow-sm">
+                2
+              </div>
+            </div>
+          </div>
+
+          <div class="slot relative flex flex-col items-center">
+            <div
+              class="box relative w-[60px] h-[60px] bg-zinc-900/60 border border-white/20 rounded-md flex items-center justify-center transition-all duration-200 hover:border-white/40">
+              <div
+                class="number absolute top-1 right-1 text-[11px] font-bold text-white bg-black/60 border border-white/20 rounded-sm px-[4px] leading-tight shadow-sm">
+                3
+              </div>
+            </div>
+          </div>
+
+          <div class="slot relative flex flex-col items-center">
+            <div
+              class="box relative w-[60px] h-[60px] bg-zinc-900/60 border border-white/20 rounded-md flex items-center justify-center transition-all duration-200 hover:border-white/40">
+              <div
+                class="number absolute top-1 right-1 text-[11px] font-bold text-white bg-black/60 border border-white/20 rounded-sm px-[4px] leading-tight shadow-sm">
+                4
+              </div>
+            </div>
+          </div>
+
+          <div class="slot relative flex flex-col items-center">
+            <div
+              class="box relative w-[60px] h-[60px] bg-zinc-900/60 border border-white/20 rounded-md flex items-center justify-center transition-all duration-200 hover:border-white/40">
+              <div
+                class="number absolute top-1 right-1 text-[11px] font-bold text-white bg-black/60 border border-white/20 rounded-sm px-[4px] leading-tight shadow-sm">
+                5
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="cpshud">
+        <div id="compass">
+          <div id="marker-container"></div>
+          <div id="center-indicator"></div>
+        </div>
+      </div>
+
+      <div
+        class="side-nav fixed top-1/2 left-0 -translate-y-1/2 flex flex-col items-center gap-2.5 p-2.5 bg-black/70 border-r border-white/10 rounded-r-xl shadow-[4px_0_25px_rgba(0,0,0,0.5)] z-[9999] overflow-y-auto">
+
+        <button id="FriendsBTN"
+          class="flex flex-col items-center justify-center w-14 h-14 rounded-md bg-gradient-to-b from-zinc-900/90 to-zinc-800/70 border border-white/10 text-white font-semibold text-[11px] tracking-wide transition-all duration-200 hover:scale-105 hover:border-emerald-400/40 hover:shadow-[0_0_15px_rgba(52,211,153,0.25)]">
+          <i data-lucide="users" class="w-4 h-4 mb-0.5 text-emerald-300"></i>
+          <span>Friends</span>
+        </button>
+
+        <button id="TradeBTN"
+          class="flex flex-col items-center justify-center w-14 h-14 rounded-md bg-gradient-to-b from-zinc-900/90 to-zinc-800/70 border border-white/10 text-white font-semibold text-[11px] tracking-wide transition-all duration-200 hover:scale-105 hover:border-amber-400/40 hover:shadow-[0_0_15px_rgba(251,191,36,0.25)]">
+          <i data-lucide="package" class="w-4 h-4 mb-0.5 text-amber-300"></i>
+          <span>Cargo</span>
+        </button>
+
+        <button id="ShopBTN"
+          class="flex flex-col items-center justify-center w-14 h-14 rounded-md bg-gradient-to-b from-zinc-900/90 to-zinc-800/70 border border-white/10 text-white font-semibold text-[11px] tracking-wide transition-all duration-200 hover:scale-105 hover:border-blue-400/40 hover:shadow-[0_0_15px_rgba(59,130,246,0.25)]">
+          <i data-lucide="store" class="w-4 h-4 mb-0.5 text-blue-300"></i>
+          <span>Shop</span>
+        </button>
+
+        <button id="QuestBTN"
+          class="flex flex-col items-center justify-center w-14 h-14 rounded-md bg-gradient-to-b from-zinc-900/90 to-zinc-800/70 border border-white/10 text-white font-semibold text-[11px] tracking-wide transition-all duration-200 hover:scale-105 hover:border-violet-400/40 hover:shadow-[0_0_15px_rgba(139,92,246,0.25)]">
+          <i data-lucide="scroll" class="w-4 h-4 mb-0.5 text-violet-300"></i>
+          <span>Quests</span>
+        </button>
+      </div>
+
+      <div class="shop-wrapper" style="display: none;">
+        <div class="shop-error" id="ShopError"></div>
+        <div class="shop-container">
+          <div class="shop-header">
+            <h2>Shop</h2>
+            <button class="shop-close" id="ShopCloseBTN">&times;</button>
+            <nav class="shop-nav">
+              <button class="nav-btn active" data-tab="ships">Ships</button>
+              <button class="nav-btn" data-tab="items">Items</button>
+              <button class="nav-btn" data-tab="upgrades">Upgrades</button>
+              <button class="nav-btn" data-tab="marketplace">
+                Marketplace
+              </button>
+            </nav>
+          </div>
+
+          <div class="shop-content">
+            <div class="tab-content active" id="ships">
+              <div class="ship-carousel-wrapper">
+
+                <div class="ship-carousel">
+                </div>
+
+              </div>
+            </div>
+            <div class="tab-content" id="items">
+              <div class="overflow-x-auto">
+                <table
+                  class="w-full text-left border-collapse text-cyan-300 text-sm md:text-base rounded-lg overflow-hidden">
+                  <thead>
+                    <tr class="border-b border-cyan-500/20">
+                      <th class="py-2 px-4 text-cyan-400 font-semibold whitespace-nowrap">Item Name</th>
+                      <th class="py-2 px-4 text-cyan-400 font-semibold">Description</th>
+                      <th class="py-2 px-4 text-cyan-400 font-semibold text-right whitespace-nowrap">Price</th>
+                      <th class="py-2 px-4 text-cyan-400 font-semibold text-center whitespace-nowrap">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-cyan-500/10">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="tab-content" id="upgrades">No upgrades available</div>
+
+            <div class="tab-content" id="marketplace">
+              <div class="marketplace-wrapper flex flex-col md:flex-row gap-4">
+
+                <div
+                  class="marketplace-post flex flex-col gap-2 p-3 border border-cyan-500/20 rounded-lg bg-cyan-900/10 md:w-56">
+                  <h3 class="text-cyan-300 font-semibold text-sm mb-1">Post Offer</h3>
+
+                  <select id="OfferItem" class="text-black px-2 py-1 rounded w-full text-sm">
+                    <option value="wood">Wood</option>
+                  </select>
+
+                  <div class="flex flex-col gap-1">
+                    <label class="text-cyan-400 text-xs">Amount: <span id="AmountLab">1</span></label>
+                    <input type="range" id="offerAmount" min="1" max="1000" value="1" class="w-full">
+                  </div>
+
+                  <div class="flex flex-col gap-1">
+                    <label class="text-cyan-400 text-xs">Gold: <span id="PriceLab">10</span></label>
+                    <input type="range" id="OfferPrice" min="1" max="100000" value="100" class="w-full">
+                  </div>
+
+                  <button id="BtnPostOffer"
+                    class="mt-2 px-4 py-1 bg-cyan-500 text-black rounded text-sm font-semibold hover:bg-cyan-400">
+                    Post
+                  </button>
+                </div>
+
+                <div
+                  class="marketplace-offers flex-1 flex flex-col gap-2 p-3 border border-cyan-500/20 rounded-lg bg-cyan-900/10 max-h-80 overflow-y-auto text-sm">
+                  <h3 class="text-cyan-300 font-semibold text-sm mb-1">Current Offers</h3>
+                  <div id="OffersList" class="flex flex-col gap-1"></div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="crosshair"></div>
+    </div>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "../game/build/three.module.js"
+      }
+    }
+  </script>
+  <script>
+    lucide.createIcons();
+  </script>
+  <script type="module" src="./game/main.js"></script>
+</body>
+
+</html>
