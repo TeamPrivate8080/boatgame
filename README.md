@@ -1,6 +1,21 @@
 # boatgame
 Boatgame / Shipz Open Source
 
+<br>
+An uncontinued web project in VanillaJS simply code or edit stuff to get it in your own style
+
+<br>
+Featues: <br>
+WebSocket / SocketIO Networking <br>
+Sharks <br>
+All server sided (player, ships, ..) no cheating is possible<br>
+Client obfuscation support <br>
+Fishing <br>
+Cannon Shooting <br>
+Pump Generators <br>
+Shop Market <br>
+& more
+
 Installation:  <br>
 Install packages: npm i <br>
 Run server: node . <br>
