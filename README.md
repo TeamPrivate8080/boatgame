@@ -1,16 +1,16 @@
 # boatgame
 Boatgame / Shipz Open Source
 
-Installation:
-Install packages: npm i
-Run server: node .
+Installation:  <br>
+Install packages: npm i <br>
+Run server: node . <br>
 
-Small note:
+Small note:  <br>
 It may take some time until you can join the game since it required an database just ignore for now.
 
-Assets used:
-- https://opengameart.org/ CC0
-- KenneyAssets CC0
+Assets used:  <br>
+- https://opengameart.org/ CC0  <br> 
+- KenneyAssets CC0  <br>
 
 The free open source boatgame/shipz game, MIT licence made by Zane
 
