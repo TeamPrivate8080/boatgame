@@ -10,6 +10,7 @@ An uncontinued web project in VanillaJS simply code or edit stuff to get it in y
 Featues: <br>
 - WebSocket / SocketIO Networking <br>
 - Threejs (clientside & partly serverside) <br>
+- TailwindCSS for client UI <br>
 - Fully multiplayer based<br>
 - Sharks <br>
 - All server sided (player, ships, ..) no cheating is possible<br>
