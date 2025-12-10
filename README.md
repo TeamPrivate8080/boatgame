@@ -2,4 +2,6 @@
 Boatgame / Shipz Open Source
 
 
-Some assets include CC0 => https://opengameart.org/
+Assets used:
+- https://opengameart.org/ CC0
+- KenneyAssets CC0
