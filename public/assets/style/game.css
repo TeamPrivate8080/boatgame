@@ -1,0 +1,368 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #001322, #000a12);
+  font-family: 'Inter', sans-serif;
+}
+
+.box.active {
+  border: 2px solid #0ba7a7;
+  box-shadow: 0 0 10px rgba(196, 229, 243, 0.699);
+  transform: scale(1.05);
+  transition: all 0.2s ease;
+}
+
+.crosshair {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.crosshair::before,
+.crosshair::after {
+  content: "";
+  position: absolute;
+  background: rgba(129, 129, 129, 0.5);
+}
+
+.crosshair::before {
+  width: 2px;
+  height: 24px;
+  top: -12px;
+  left: -1px;
+}
+
+.crosshair::after {
+  width: 24px;
+  height: 2px;
+  left: -12px;
+  top: -1px;
+}
+
+#cpshud {
+  position: absolute;
+  top: 1vh;
+  width: 100%;
+  pointer-events: none;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #eee;
+  text-align: center;
+  z-index: 9999;
+  user-select: none;
+}
+
+#compass {
+  overflow: hidden;
+  width: 420px;
+  margin: 0 auto;
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  height: 60px;
+}
+
+#marker-container {
+  display: flex;
+  white-space: nowrap;
+  position: absolute;
+  left: 0;
+  top: 0;
+  transition: left 0.2s linear;
+}
+
+.marker {
+  display: inline-block;
+  width: 60px;
+  text-align: center;
+  font-weight: 600;
+  position: relative;
+  color: #ddd;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
+}
+
+.coordtick {
+  width: 2px;
+  height: 14px;
+  background: rgba(200, 200, 200, 0.6);
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  border-radius: 1px;
+}
+
+.marker span {
+  display: block;
+  margin-top: 24px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #eee;
+}
+
+.tick-value {
+  position: absolute;
+  top: 12px;
+  font-size: 11px;
+  color: rgba(220, 220, 220, 0.8);
+  transform: translateX(-50%);
+  font-weight: 700;
+}
+
+#center-indicator {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 2px;
+  height: 52px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.3));
+  transform: translateX(-50%);
+  pointer-events: none;
+  border-radius: 1px;
+}
+
+#island-welcome {
+  position: fixed;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-60px);
+  font-family: 'Cinzel', serif;
+  font-size: 54px;
+  font-weight: 600;
+  color: rgb(228, 228, 228);
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  opacity: 0;
+  transition: transform 0.8s ease, opacity 0.8s ease;
+  z-index: 49;
+  overflow: visible;
+}
+
+#island-welcome.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+#island-welcome::before,
+#island-welcome::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  height: 2px;
+  width: 80px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(243, 243, 243, 0.6), rgba(255, 255, 255, 0));
+  opacity: 0;
+  transform: scaleX(0);
+  transition: transform 2s ease, opacity 1.5s ease;
+}
+
+#island-welcome::before {
+  left: -100px;
+  transform-origin: right center;
+}
+
+#island-welcome::after {
+  right: -100px;
+  transform-origin: left center;
+}
+
+#island-welcome.show::before,
+#island-welcome.show::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+#island-welcome::after,
+#island-welcome::before {
+  pointer-events: none;
+}
+
+#chat-input:focus {
+  outline: none;
+  background: rgba(35, 35, 50, 0.7);
+}
+
+#chat-messages::-webkit-scrollbar {
+  width: 5px;
+}
+
+#chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(150, 150, 170, 0.5);
+  border-radius: 2px;
+}
+
+.chat-message {
+  margin-bottom: 6px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.chat-sender {
+  font-weight: bold;
+  color: #80c0ff;
+  margin-right: 4px;
+}
+
+.player-hud {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  color: #fff;
+  z-index: 9999;
+}
+
+.player-name {
+  font-weight: 700;
+  font-size: 18px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.stats-bars {
+  display: flex;
+  gap: 8px;
+  width: 340px;
+}
+
+.xp-bar-container,
+.kills-bar-container {
+  position: relative;
+  flex: 1;
+  height: 16px;
+  /* compact height */
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6b7280, #4b5563);
+  border-radius: 6px 0 0 6px;
+  transition: width 0.3s ease;
+}
+
+.kills-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #9ca3af, #6b7280);
+  border-radius: 6px 0 0 6px;
+  transition: width 0.3s ease;
+}
+
+.xp-text,
+.kills-text {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.rank-bar-container {
+  position: relative;
+  width: 360px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.rank-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4b5563, #374151);
+  border-radius: 8px 0 0 8px;
+  transition: width 0.3s ease;
+}
+
+.rank-text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+
+@media (max-width: 400px) {
+
+  .stats-bars,
+  .rank-bar-container {
+    width: 260px;
+  }
+
+  .player-name {
+    font-size: 16px;
+  }
+
+  .xp-bar-container,
+  .kills-bar-container {
+    height: 14px;
+  }
+
+  .rank-bar-container {
+    height: 18px;
+  }
+}
+
+@media (max-height: 800px) {
+  #chatbox {
+    height: 30vh !important;
+    bottom: 1vh !important;
+  }
+}
+
+@media (max-height: 700px) {
+  #chatbox {
+    height: 25vh !important;
+    bottom: 0.5vh !important;
+  }
+}
+
+.side-nav {
+  max-height: 90vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 100, 100, 0.4) transparent;
+}
+
+.side-nav::-webkit-scrollbar {
+  width: 5px;
+}
+
+.side-nav::-webkit-scrollbar-thumb {
+  background: rgba(120, 120, 120, 0.4);
+  border-radius: 2px;
+}
+
+#chatbox,
+.side-nav {
+  transition: all 0.4s ease-in-out;
+}
+
+@keyframes FI {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: FI 0.4s ease-out forwards;
+}
